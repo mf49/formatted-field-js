@@ -144,19 +144,21 @@ function FormattedField(elem, options)
 		{
 			for (var k in replace[i])
 			{
-				var regexp;
-				
 				if (replace[i][k].hasOwnProperty('self'))
 				{
-					regexp = new RegExp(replace[i][k].self);
+					var regexp = new RegExp(replace[i][k].self);
 					if (regexp.test(value))
 						return replace[i][k].value;
 				}
-				if (replace[i][k].hasOwnProperty('all'))
+				else if (replace[i][k].hasOwnProperty('all'))
 				{				
-					regexp = new RegExp(replace[i][k].all);
+					var regexp = new RegExp(replace[i][k].all);
 					if (regexp.test(elem.value))
 						return replace[i][k].value;
+				}
+				else
+				{
+					return replace[i][k].value;
 				}
 			}
 		}
