@@ -17,12 +17,21 @@ Usage
 Options
 -------
 
-* **pattern** {string}: String consisting of special symbols (9 - for numbers, custom symbols +,(, ,),- ).
-  * For example: +9 (999) 999-99-99 or 9999.9999
-* **minlength** {int} (optional): Integer value of minimal length of the formatted field value.
-* **replace** {object} (optional): Object for the replace some symbol of the field value with other symbol. For example code below as replace parameter object means that if the second symbol is matched as 8 it will be replaced with 7.
+* **pattern** {string}: String consisting of special symbols (9 - for numbers, custom symbols +,.,(, ,),- ).
 ```
-{
+pattern: '+9 (999) 999-99-99'
+```
+* **minlength** {int} (optional): Integer value of minimal length of the formatted field value.
+* **replace** {object} (optional): Object for the replace some symbol of the field value with other symbol. For example:
+  * Second symbol is always 7:
+```
+replace: {
+   2: [{ value: 7 }]
+}
+```
+  * If the second symbol is matched as 8 it will be replaced with 7:
+```
+replace: {
    2: [{
       self: 8,
       value: 7
@@ -31,7 +40,7 @@ Options
 ```
 * **customPattern** {object} (optional): Object containing other patterns which will be used instead default **pattern** option in case of matching field value to the key of the object.
 ```
-{
-   '380': '+999 (99) 999-99-99'
+customPattern: {
+   '380': '+999 (999) 999-99-99'
 }
 ```
