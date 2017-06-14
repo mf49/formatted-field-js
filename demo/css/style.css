@@ -1,0 +1,59 @@
+body {
+	font-family: Arial, sans;
+}
+input[type="text"] {
+	font-size: 1.1em;
+	padding: 7px 12px;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+}
+button,
+input[type="submit"] {
+	font-size: 1.1em;
+	padding: 7px 12px;
+	border: 0;
+	border-radius: 6px;
+	background: #000;
+	color: #fff;
+	cursor: pointer;
+}
+button:hover,
+input[type="submit"]:hover {
+	opacity: .7;
+}
+fieldset {
+	padding: 0;
+	margin: 0 0 0.5em 0;
+	border: 0;
+}
+.container {
+	padding: 2em 3em;
+}
+h1 {
+	margin: 0 0 1em 0;
+}
+h2 {
+	margin: 0 0 0.5em 0;
+}
+pre {
+	margin: 0;
+}
+ul {
+	margin: 0 0 10px 20px;
+	padding: 0;
+}
+ul li {
+	padding: 0 0 10px 0;
+}
+ul + pre {
+	padding-left: 20px;
+}
+section {
+	padding: 0.5em 0;
+}
+section ul {
+	font-size: 0.9em;
+}
+section form {
+	margin-bottom: 1em;
+}
