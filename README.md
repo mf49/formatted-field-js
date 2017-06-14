@@ -17,7 +17,7 @@ Usage
 Options
 -------
 
-* **pattern** {string}: String consisting of special symbols (9 - for numbers, custom symbols +,.,(, ,),- ).
+* **pattern** {string}: String consisting of special symbols: 9 - for numbers and other custom symbols (space and +().-).
 ```
 	pattern: '+9 (999) 999-99-99'
 ```
