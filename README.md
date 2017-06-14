@@ -29,18 +29,18 @@ Options
   * Second example: if the second symbol is matched as 8 it will be replaced with 7.
 ```
 	replace: {
-		2: [{ value: 7 }]
+	   2: [{ value: 7 }]
 	}
 	replace: {
-		2: [{
-			self: 8,
-			value: 7
-		}]
+	   2: [{
+	      self: 8,
+	      value: 7
+	   }]
 	}
 ```
 * **customPattern** {object} (optional): Object containing other patterns which will be used instead default **pattern** option in case of matching field value to the key of the object.
 ```
 	customPattern: {
-		'380': '+999 (999) 999-99-99'
+	   '380': '+999 (999) 999-99-99'
 	}
 ```
