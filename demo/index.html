@@ -38,13 +38,15 @@ pattern: '9999 9999 9999 9999',
 					<button type="submit">Send</button>
 				</form>
 				<pre>
-pattern: '+9 (999) 999-99-99'
+pattern: '+9 (999) 999-99-99 999',
+minlength: 18
 				</pre>
 				<script>
 					var elem = document.getElementById('phone');
 
 					var field = new FormattedField(elem, {
-						pattern: '+9 (999) 999-99-99'
+						pattern: '+9 (999) 999-99-99 999',
+						minlength: 18
 					});
 				</script>
 			</section>	
