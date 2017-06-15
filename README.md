@@ -22,7 +22,10 @@ Options
 	pattern: '+9 (999) 999-99-99'
 ```
 
-* **minlength** {int} (optional): Integer value of minimal length of the formatted field value.
+* **minlength** {int} (optional): Integer value of minimal length of the formatted field value. For example, lenght of the pattern string above is 18.
+```
+	minlength: 18
+```
 
 * **replace** {object} (optional): Object for the replace some symbol of the field value with other symbol.
   * First example: second symbol is always 7.
