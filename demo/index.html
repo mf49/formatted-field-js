@@ -11,7 +11,7 @@
 		<div class="container">
 		
 			<h1>formatted-field.js</h1>	
-			<h2>&laquo;Examples &raquo;</h2>	
+			<h2>Examples</h2>	
 			
 			<section id="credit-card">
 				<h3>Credit card number</h3>
@@ -81,7 +81,7 @@ minlength: 18
 				</form>
 				<pre>
 pattern: '+999 (999) 999-99-99',
-replace: { 
+customReplace: { 
    2: [{
       self: 8,
       value: 7
@@ -95,7 +95,7 @@ customPattern: {
 					var elem = document.getElementById('phone2');
 					var field = new FormattedField(elem, {
 						pattern: '+999 (999) 999-99-99',
-						replace: {
+						customReplace: {
 							2: [{
 								self: 8,
 								value: 7
@@ -138,7 +138,7 @@ pattern: '99.99.9999',
 				</form>
 				<pre>
 pattern: '99.99.9999',
-replace: {
+customReplace: {
    1: [{
       self: '[4-9]',
       value: 0
@@ -176,7 +176,7 @@ replace: {
 					var elem = document.getElementById('birth2');
 					var field = new FormattedField(elem, {
 						pattern: '99.99.9999',
-						replace: {
+						customReplace: {
 							1: [{
 								self: '[4-9]',
 								value: 0
