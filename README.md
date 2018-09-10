@@ -30,8 +30,8 @@ Options
 * **replace** {array|object} (optional): Array of objects (or single object) which designed for replacement some pattern {string|RegExp} (self) by a string (value).
 ```
 	replace: [
-		{ self: ',', value: '.' },
-		{ self: /\s/, value: '' }
+	   { self: ',', value: '.' },
+	   { self: /\s/, value: '' }
 	]
 ```
 
