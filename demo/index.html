@@ -11,7 +11,7 @@
 		<div class="container">
 		
 			<h1>formatted-field.js</h1>	
-			<h2>Examples</h2>	
+			<h2>&laquo;Examples &raquo;</h2>	
 			
 			<section id="credit-card">
 				<h3>Credit card number</h3>
@@ -24,9 +24,27 @@ pattern: '9999 9999 9999 9999',
 				</pre>
 				<script>
 					var elem = document.getElementById('credit');
-
 					var field = new FormattedField(elem, {
 						pattern: '9999 9999 9999 9999'
+					});
+				</script>
+			</section>
+			
+			<section id="float-value">
+				<h3>Float value</h3>
+				<form action="">
+					<input type="text" id="float" name="float" value="" />
+					<button type="submit">Send</button>
+				</form>
+				<pre>
+pattern: '9?9?9?9,99',
+replace: [ {self: '.', value: ','}, {self: /^0/, value: ''} ],
+				</pre>
+				<script>
+					var elem = document.getElementById('float');
+					var field = new FormattedField(elem, {
+						pattern: '9?9?9?9,99',
+						replace: [ {self: '.', value: ','}, {self: /^0/, value: ''} ]
 					});
 				</script>
 			</section>	
@@ -43,7 +61,6 @@ minlength: 18
 				</pre>
 				<script>
 					var elem = document.getElementById('phone');
-
 					var field = new FormattedField(elem, {
 						pattern: '+9 (999) 999-99-99 999',
 						minlength: 18
@@ -76,7 +93,6 @@ customPattern: {
 				</pre>
 				<script>
 					var elem = document.getElementById('phone2');
-
 					var field = new FormattedField(elem, {
 						pattern: '+999 (999) 999-99-99',
 						replace: {
@@ -104,7 +120,6 @@ pattern: '99.99.9999',
 				</pre>
 				<script>
 					var elem = document.getElementById('birth');
-
 					var field = new FormattedField(elem, {
 						pattern: '99.99.9999'
 					});
@@ -159,7 +174,6 @@ replace: {
 				</pre>
 				<script>
 					var elem = document.getElementById('birth2');
-
 					var field = new FormattedField(elem, {
 						pattern: '99.99.9999',
 						replace: {

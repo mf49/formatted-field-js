@@ -1,6 +1,6 @@
 {
-  "name": "formatted-field-js",
-  "version": "1.0.2",
+  "name": "formatted-field",
+  "version": "1.1.0",
   "description": "Formatted field widget",
   "main": "./dist/formatted-field.js",
   "scripts": {
@@ -13,5 +13,17 @@
     "postinstall": "npm run build:all && npm run watch:all"
   },
   "author": "Mikhail Fedorov",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "parallelshell": "^3.0.2"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mfyodorov/formatted-field-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mfyodorov/formatted-field-js/issues"
+  },
+  "homepage": "https://github.com/mfyodorov/formatted-field-js#readme"
 }

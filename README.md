@@ -27,20 +27,29 @@ Options
 	minlength: 18
 ```
 
-* **replace** {object} (optional): Object for the replace some symbol of the field value with other symbol.
+* **replace** {array|object} (optional): Array of objects (or single object) which designed for replacement some pattern {string|RegExp} (self) by a string (value).
+```
+	replace: [
+		{ self: ',', value: '.' },
+		{ self: /\s/, value: '' }
+	]
+```
+
+* **customReplace** {object} (optional): Object for the replace some symbol of the field value with other symbol.
   * First example: second symbol is always 7.
   * Second example: if the second symbol is matched as 8 it will be replaced with 7.
 ```
-	replace: {
+	customReplace: {
 	   2: [{ value: 7 }]
 	}
-	replace: {
+	customReplace: {
 	   2: [{
 	      self: 8,
 	      value: 7
 	   }]
 	}
 ```
+
 * **customPattern** {object} (optional): Object containing other patterns which will be used instead default **pattern** option in case of matching field value to the key of the object.
 ```
 	customPattern: {

@@ -1,6 +1,6 @@
 /**
  * Formatted field widget
- * @version 1.0.2
+ * @version 1.1.0
  * @author mfyodorov
  * @license MIT
  */
@@ -12,38 +12,49 @@
  */
 function FormattedField(elem, options)
 {
-	var defaultPattern = options.pattern || '',
-		customPattern = options.customPattern || {},
-		minlength = options.minlength || 0,
-		replace = options.replace || {};
+	var state = {
+		replace: getReplace(options.replace),
+		customReplace: options.customReplace || {},
+		pattern: false,
+		currentPattern: '', 
+		digits: '', 
+		minlength: options.minlength || false,	
+		maxlength: '',
+		allowed: {}
+	};
 	
-	var pattern, digits, currentPattern, maxlength, allowed;
-	
-	pattern = customPattern;
-	pattern.default = defaultPattern;
-	
-	var lib = { '9': '\\d', ' ': '\\s', '+': '\\+', '(': '\\(', ')': '\\)', '.': '\\.' };
+	if (options.pattern)
+	{	
+		state.pattern = options.customPattern || {};
+		createPatterns(options.pattern);
+	}
 	
 	init();
 	
 	function init()
 	{
+		if (state.minlength)
+			elem.setAttribute('pattern', '.{' + state.minlength + ',}');
+			
 		formatValue();
 	
-		elem.onkeypress = function(e)
+		if (state.pattern)
 		{
-			e = e || event;
+			elem.onkeypress = function(e)
+			{
+				e = e || event;
 
-			if (e.ctrlKey || e.altKey || e.metaKey) 
-				return;
+				if (e.ctrlKey || e.altKey || e.metaKey) 
+					return;
 
-			var chr = getChar(e);
+				var chr = getChar(e);
 
-			if (chr == null) 
-				return;
+				if (chr == null) 
+					return;
 
-			return checkCharacter(chr);
-		};
+				return checkCharacter(chr, state.allowed, state.replace, elem);
+			};
+		}
 		
 		elem.onkeyup = function(e)
 		{
@@ -53,46 +64,53 @@ function FormattedField(elem, options)
 	
 	function formatValue()
 	{
-		digits = getDigits(elem.value);		
-		currentPattern = getFormatExp();			
-		allowed = getAllowedRegExp();		
-		maxlength = currentPattern.length;
+		for (var i in state.replace)
+			elem.value = elem.value.replace(state.replace[i]['self'], state.replace[i]['value']);
 		
-		elem.setAttribute('maxlength', maxlength);
-		elem.setAttribute('minlength', minlength);
+		if (!state.pattern)
+			return;
+			
+		state.digits = getDigits(elem.value);
 		
-		if (!checkFormat(elem.value))
+		var pattern = getPattern();
+		if (!Array.isArray(pattern))
+			pattern = [pattern];
+		
+		for (var i in pattern)
 		{
-			elem.value = getFormattedValue();
+			state.currentPattern = pattern[i];
+			state.allowed = getAllowed(state.currentPattern, state.replace);	
+			state.maxlength = state.currentPattern.length;
+			
+			var check = checkFormat(elem.value);
+			
+			if (check.flag)
+				return;
+			
+			if (check.type === 'replace')
+				break;
 		}
+	
+		elem.value = getFormattedValue();
 	}
 	
 	function checkFormat(value)
 	{
-		if (value.length > maxlength)
-			return false;
+		if (value.length > state.maxlength)
+			return { flag: false, type: 'length' };
 		
 		for (var i in value)
 		{
-			var regexp = getRegExp(currentPattern[i]);
+			var regexp = getCharRegExp(state.currentPattern[i]);
 			if (!regexp.test(value[i]))
-				return false;
-			var replace = getReplacedValue(i, value[i]);
-			if (replace !== false)
-				return false;
+				return { flag: false, type: 'pattern' };
+			
+			var needReplace = getCustomReplacedValue(i, value[i]);
+			
+			if (needReplace !== false)
+				return { flag: false, type: 'replace' };
 		}
-		return true;
-	}
-	
-	function checkCharacter(chr)
-	{
-		return allowed.test(chr);
-	}
-	
-	function getDigits(value)
-	{
-		var digits = value;
-		return digits.replace(/\D*/g, '');
+		return { flag: true };
 	}
 	
 	function getFormattedValue()
@@ -100,96 +118,187 @@ function FormattedField(elem, options)
 		var formatted = '',
 			digitIndex = 0;
 			
-		for (var i in currentPattern)
+		for (var i in state.currentPattern)
 		{
-			if (digits.length <= digitIndex)
+			if (state.digits.length <= digitIndex)
 				break;
 			
-			if (currentPattern[i] == '9')
+			if (state.currentPattern[i] == '9')
 			{
-				var replace = getReplacedValue(i, digits[digitIndex]);
-				formatted += (replace !== false ? replace : digits[digitIndex]);
+				var replace = getCustomReplacedValue(i, state.digits[digitIndex]);
+				formatted += (replace !== false ? replace : state.digits[digitIndex]);
 				digitIndex++;
 			}
 			else
 			{
-				formatted += currentPattern[i];
+				formatted += state.currentPattern[i];
 			}
 		}
 		return formatted;
 	}
 	
-	function getFormatExp()
+	function getPattern()
 	{
-		for (var key in pattern)
+		for (var key in state.pattern)
 		{
 			if (key == 'default')
 				continue;
 			
 			var regexp = new RegExp('^' + key);
-			if (regexp.test(digits) === true)
+			if (regexp.test(state.digits) === true)
 			{
-				return pattern[key];
+				return state.pattern[key];
 			}
 		}
 		
-		return pattern.default;
+		return state.pattern.default;
 	}
 	
-	function getReplacedValue(i, value)
+	function getCustomReplacedValue(i, value)
 	{
 		i = parseInt(i) + 1;
 		
-		if (replace.hasOwnProperty(i))
+		if (state.customReplace.hasOwnProperty(i))
 		{
-			for (var k in replace[i])
+			for (var k in state.customReplace[i])
 			{
-				if (replace[i][k].hasOwnProperty('self'))
+				if (state.customReplace[i][k].hasOwnProperty('self'))
 				{
-					var regexp = new RegExp(replace[i][k].self);
+					var regexp = new RegExp(state.customReplace[i][k].self);
 					if (regexp.test(value))
-						return replace[i][k].value;
+						return state.customReplace[i][k].value;
 				}
-				else if (replace[i][k].hasOwnProperty('all'))
+				else if (state.customReplace[i][k].hasOwnProperty('all'))
 				{				
-					var regexp = new RegExp(replace[i][k].all);
+					var regexp = new RegExp(state.customReplace[i][k].all);
 					if (regexp.test(elem.value))
-						return replace[i][k].value;
+						return state.customReplace[i][k].value;
 				}
 				else
 				{
-					return replace[i][k].value;
+					return state.customReplace[i][k].value;
 				}
 			}
 		}
 		return false;
 	}
 	
-	function getRegExp(chr)
+	function createPatterns(pattern)
 	{
-		var string = getRegExpString(chr);
-		return new RegExp(string);
+		if (!state.pattern.hasOwnProperty('default'))
+			state.pattern.default = [ pattern.replace(/\?/g,'') ];
+		
+		var index = pattern.indexOf('?');
+
+		if (index !== -1)
+		{
+			newPattern = (
+				(index > 1 ? pattern.substring(0, index-1) : '') 
+				+ (index < pattern.length ? pattern.substring(index+1) : '')
+			);
+			state.pattern.default.push(newPattern.replace(/\?/g,''));
+			createPatterns(newPattern);
+		}
+		else
+		{
+			state.pattern.default = state.pattern.default.reverse();
+		}
 	}
 	
-	function getRegExpString(chr)
+	function getReplace(optionsReplace)
 	{
+		var replace = [];
+		
+		if (typeof optionsReplace === 'object')
+		{			
+			if (Array.isArray(optionsReplace))
+				replace = optionsReplace;
+			else
+				replace.push(optionsReplace);
+			
+			replace = replace.filter(function(item) {
+				if (item.self)
+					return { 
+						self: item.self, 
+						value: (typeof item.value === 'string' ? item.value : '') 
+					};
+			});
+		}
+		
+		return replace;
+	}
+	
+	function getAllowed(pattern, replace)
+	{
+		var unique = {},
+			string = '';
+			
+		for (var i in pattern)
+			addToAllowed(pattern[i], unique);
+		
+		return unique;
+	}
+	
+	function addToAllowed(symbol, allowed)
+	{
+		if (Object.keys(allowed).indexOf(symbol) === -1)
+			allowed[symbol] = ({ regexp: getCharRegExp(symbol, 'g'), count: 1 });
+		else
+			++allowed[symbol].count;
+	}
+	
+	function getCharRegExp(chr, flags)
+	{
+		var string = getCharRegExpString(chr);
+		return new RegExp(string, flags);
+	}
+	
+	function getCharRegExpString(chr)
+	{
+		var lib = { '9': '\\d', ' ': '\\s', '+': '\\+', '(': '\\(', ')': '\\)', '.': '\\.' };
 		return (lib.hasOwnProperty(chr) ? lib[chr] : chr);
 	}
 	
-	function getAllowedRegExp()
+	function getDigits(value)
 	{
-		var unique = [],
-			string = '';
-			
-		for (var i in currentPattern)
+		return value.replace(/\D*/g, '');
+	}
+	
+	function checkCharacter(chr, allowed, replace, elem)
+	{
+		var value = elem.value,
+			isSelection = (elem.selectionEnd && elem.selectionEnd - elem.selectionStart > 0);
+		
+		chr = getReplacedChar(chr, replace);
+		
+		for (var i in allowed)
 		{
-			if (unique.indexOf(currentPattern[i]) == -1)
+			var check = allowed[i].regexp.test(chr);
+			if (check)
 			{
-				unique.push(currentPattern[i]);
-				string += getRegExpString(currentPattern[i]);
+				if (!isSelection)
+				{
+					var valueContains = (
+						value 
+						? (value.match(allowed[i].regexp) ? value.match(allowed[i].regexp).length : 0)
+						: 0
+					);
+					check = (allowed[i].count > valueContains);
+				}		
+				return check;
 			}
 		}
-		return new RegExp('[' + string + ']');
+		return false;
+	}
+	
+	function getReplacedChar(chr, replace)
+	{
+		for (var i in replace)
+		{
+			if (typeof replace[i]['self'] === 'string' && replace[i]['self'] === chr && replace[i]['value'])
+				return replace[i]['value'];
+		}
+		return chr;
 	}
 	
 	function getChar(event)
